@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>משימות בוקר</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="top hebrew" dir="rtl">
+      <h1 class="title">משימות בוקר</h1>
+      <div class="roundInfo">
+        <span id="roundTimer">זמן כולל: 00:00</span>
+        <button id="resetBtn" class="reset" type="button">התחלה מחדש</button>
+      </div>
+    </header>
+
+    <section id="tasksSection" class="card">
+      <p class="hint hebrew" dir="rtl">
+        לחצי על משימה כדי להתחיל. לחצי שוב כדי לסיים.
+      </p>
+
+      <div id="grid" class="grid"></div>
+
+      <div id="message" class="message hebrew" dir="rtl"></div>
+      <div id="fx" class="fx" aria-hidden="true"></div>
+    </section>
+
+    <!-- Final "page" (shown when all tasks are done) -->
+    <section id="finalSection" class="card final hidden hebrew" dir="rtl" aria-live="polite">
+      <h2>שיהיה לך יום מוצלח!</h2>
+      <p id="finalTime" class="finalTime"></p>
+      <button id="playAgainBtn" class="primary" type="button">סבב נוסף</button>
+    </section>
+  </main>
+
+  <script src="game.js"></script>
+</body>
+</html>

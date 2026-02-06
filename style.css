@@ -1,0 +1,145 @@
+:root { font-family: system-ui, Arial, sans-serif; }
+body { margin: 0; background: #f6f7fb; }
+.app { max-width: 900px; margin: 0 auto; padding: 16px; }
+
+.hebrew { direction: rtl; text-align: right; unicode-bidi: plaintext; }
+
+.top {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.title { margin: 0; font-size: 34px; }
+.roundInfo { display:flex; gap: 10px; align-items:center; flex-wrap: wrap; }
+#roundTimer { font-weight: 800; }
+
+.reset {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.card {
+  margin-top: 14px;
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  position: relative;
+}
+
+.hint { margin: 0 0 12px; font-weight: 700; color: #374151; }
+
+.grid {
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.task {
+  border: 2px solid #eee;
+  border-radius: 16px;
+  padding: 12px;
+  background: #fff;
+  cursor: pointer;
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  user-select: none;
+  position: relative;
+}
+
+.task img {
+  width: 84px;
+  height: 84px;
+  object-fit: contain;
+}
+
+.taskName {
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.taskSub {
+  font-size: 14px;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+/* Task states */
+.task.ready { border-color: #e5e7eb; }
+.task.running { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.15); }
+.task.doneGood { border-color: #22c55e; }
+.task.doneLate { border-color: #f97316; }
+
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: #111827;
+  color: white;
+}
+
+.message {
+  margin-top: 14px;
+  min-height: 28px;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Simple fireworks confetti dots */
+.dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  opacity: 0.95;
+  animation: pop 900ms ease-out forwards;
+}
+
+@keyframes pop {
+  from { transform: translate(0, 0) scale(1); opacity: 1; }
+  to   { transform: translate(var(--dx), var(--dy)) scale(0.6); opacity: 0; }
+}
+
+.final.hidden { display: none; }
+
+.final h2 { margin: 0 0 10px; font-size: 30px; }
+.finalTime { font-size: 20px; font-weight: 900; margin: 8px 0 0; }
+
+.primary {
+  width: 100%;
+  margin-top: 14px;
+  padding: 14px;
+  font-size: 20px;
+  border-radius: 14px;
+  border: none;
+  background: #111827;
+  color: white;
+  cursor: pointer;
+}
