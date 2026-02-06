@@ -10,11 +10,13 @@ const TASKS = [
 ];
 
 // Round state
-let roundStartTs = null;            // when the first task was started
-let roundEndTs = null;              // when the last task was completed
-let roundTicker = null;
+let roundStartTs = null;     // when the first task was started
+let roundEndTs = null;       // when the last task was completed
+let roundTicker = null;      // updates total timer
+let countdownTicker = null;  // updates per-task countdowns
 
-const stateById = {};               // { startedAt, doneAt, status: 'ready'|'running'|'doneGood'|'doneLate' }
+// stateById: { status, startedAt, doneAt }
+const stateById = {};
 
 function pad2(n) { return String(n).padStart(2, "0"); }
 
@@ -35,7 +37,6 @@ function clearFx() {
 }
 
 function fireworks() {
-  // Simple confetti burst (no external libraries)
   clearFx();
   const fx = $("fx");
   const count = 26;
@@ -44,11 +45,9 @@ function fireworks() {
     const dot = document.createElement("div");
     dot.className = "dot";
 
-    // random start in the center-ish
-    const x = 40 + Math.random() * 20; // %
-    const y = 35 + Math.random() * 20; // %
+    const x = 40 + Math.random() * 20;
+    const y = 35 + Math.random() * 20;
 
-    // random travel
     const dx = (Math.random() * 260 - 130) + "px";
     const dy = (Math.random() * 260 - 130) + "px";
     dot.style.left = x + "%";
@@ -56,14 +55,12 @@ function fireworks() {
     dot.style.setProperty("--dx", dx);
     dot.style.setProperty("--dy", dy);
 
-    // random color
     const colors = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#3b82f6", "#a855f7"];
     dot.style.background = colors[Math.floor(Math.random() * colors.length)];
 
     fx.appendChild(dot);
   }
 
-  // auto-clear
   setTimeout(clearFx, 950);
 }
 
@@ -79,9 +76,26 @@ function startRoundTimerIfNeeded() {
   }, 250);
 }
 
-function stopRoundTicker() {
+function startCountdownTickerIfNeeded() {
+  if (countdownTicker) return;
+  countdownTicker = setInterval(() => {
+    // Re-render to update countdown displays (only 6 cards, cheap)
+    renderGrid();
+  }, 250);
+}
+
+function stopTickers() {
   if (roundTicker) clearInterval(roundTicker);
+  if (countdownTicker) clearInterval(countdownTicker);
   roundTicker = null;
+  countdownTicker = null;
+}
+
+function remainingSeconds(task, st) {
+  if (st.status !== "running" || !st.startedAt) return task.seconds;
+  const elapsed = Math.floor((nowMs() - st.startedAt) / 1000);
+  const remaining = task.seconds - elapsed;
+  return remaining;
 }
 
 function renderGrid() {
@@ -98,7 +112,7 @@ function renderGrid() {
     badge.className = "badge";
     badge.textContent =
       st.status === "ready" ? "מוכן" :
-      st.status === "running" ? "בזמן..." :
+      st.status === "running" ? "סופרים לאחור..." :
       st.status === "doneGood" ? "הצלחת!" :
       "לא בזמן";
 
@@ -110,13 +124,26 @@ function renderGrid() {
     name.className = "taskName";
     name.textContent = t.name;
 
+    // Countdown line: shows remaining time once started
+    const timerLine = document.createElement("div");
+    timerLine.className = "taskTimer";
+
+    if (st.status === "running") {
+      const rem = remainingSeconds(t, st);
+      timerLine.textContent = rem >= 0 ? formatMMSS(rem) : "00:00";
+    } else {
+      // before start, show full allocated time
+      timerLine.textContent = formatMMSS(t.seconds);
+    }
+
     const sub = document.createElement("div");
     sub.className = "taskSub";
-    sub.textContent = `זמן: ${formatMMSS(t.seconds)}`;
+    sub.textContent = "לחיצה: התחלה / סיום";
 
     card.appendChild(badge);
     card.appendChild(img);
     card.appendChild(name);
+    card.appendChild(timerLine);
     card.appendChild(sub);
 
     card.addEventListener("click", () => onTaskClick(t));
@@ -127,10 +154,9 @@ function renderGrid() {
 function onTaskClick(task) {
   const st = stateById[task.id];
 
-  // if already done, ignore clicks
   if (st.status === "doneGood" || st.status === "doneLate") return;
 
-  // First click: start task timer
+  // First click: start countdown
   if (st.status === "ready") {
     const ts = nowMs();
     st.status = "running";
@@ -140,6 +166,8 @@ function onTaskClick(task) {
       roundStartTs = ts;
       startRoundTimerIfNeeded();
     }
+
+    startCountdownTickerIfNeeded();
 
     setMessage(`התחלנו: ${task.name}`);
     renderGrid();
@@ -177,7 +205,7 @@ function checkAllDone() {
   if (!allDone) return;
 
   roundEndTs = nowMs();
-  stopRoundTicker();
+  stopTickers();
 
   const totalSec = Math.floor((roundEndTs - roundStartTs) / 1000);
   $("finalTime").textContent = `זמן כולל לסיום כל המשימות: ${formatMMSS(totalSec)}`;
@@ -189,7 +217,7 @@ function checkAllDone() {
 function resetRound() {
   roundStartTs = null;
   roundEndTs = null;
-  stopRoundTicker();
+  stopTickers();
   clearFx();
   setMessage("");
   $("roundTimer").textContent = `זמן כולל: 00:00`;
