@@ -57,7 +57,7 @@ body { margin: 0; background: #f6f7fb; }
   gap: 10px;
   align-items: center;
   justify-content: center;
-  min-height: 180px;
+  min-height: 190px;
   user-select: none;
   position: relative;
 }
@@ -76,8 +76,15 @@ body { margin: 0; background: #f6f7fb; }
 
 .taskSub {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   color: #6b7280;
+}
+
+/* Countdown timer (big + obvious) */
+.taskTimer {
+  font-size: 22px;
+  font-weight: 1000;
+  color: #111827;
 }
 
 /* Task states */
